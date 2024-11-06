@@ -1,0 +1,42 @@
+{
+  "name": "codevideo-dynamic-ast",
+  "version": "1.0.0",
+  "description": "Dynamically identify and statically analyze an arbitrary amount of source code files of any programming language.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "ts-morph": "^19.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "ast",
+    "parser",
+    "typescript",
+    "csharp",
+    "golang",
+    "static analysis"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
