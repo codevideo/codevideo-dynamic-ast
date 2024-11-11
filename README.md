@@ -10,13 +10,15 @@ npm install codevideo-dynamic-ast
 
 ## Usage
 
+Provide an array of one or more `IFileSource` objects and get back an `IParseResult` back.
+
 ```typescript
-import { parseProject } from 'codevideo-dynamic-ast';
+import { parseProject } from '@fullstackcraftllc/codevideo-dynamic-ast';
 
 const files = [
-    { path: 'src/main.ts', content: '...' },
-    { path: 'src/Program.cs', content: '...' },
-    { path: 'src/main.go', content: '...' }
+    { path: 'src/index.ts', content: '...' },
+    { path: 'src/utils/someutil.ts', content: '...' },
+    { path: 'src/components/MyComponent.tsx', content: '...' }
 ];
 
 const results = await parseProject(files);
@@ -29,14 +31,6 @@ console.log(results);
 //             "language": "TypeScript"
 //             "errors": [...]
 //         },
-//         {
-//             "language": "C#"
-//             "errors": [...]
-//         },
-//         {
-//             "language": "Go"
-//             "errors": [...]
-//         }
 //     ]
 // }
 ```
@@ -56,27 +50,20 @@ console.log(results);
 
 ## Development
 
+Install dependencies:
+
 ```bash
-# Install dependencies
 npm install
-
-# Build
-npm run build
-
-# Test
-npm test
-
-# Watch mode
-npm run build:watch
-
-# Lint
-npm run lint
 ```
 
-## Contributing
+Build:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```bash
+npm run build
+```
 
-## License
+Test:
 
-MIT © [CodeVideo](https://codevideo.io)
+```
+npm test
+```
