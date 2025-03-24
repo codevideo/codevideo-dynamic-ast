@@ -1,5 +1,5 @@
-import { IFileSource } from '../interfaces/IFileSource';
-import { detectProjects } from '../project-detector';
+import { IFileSource } from '@fullstackcraftllc/codevideo-types';
+import { detectProjects } from '../utils/detectProjects';
 
 describe('Project Detector', () => {
     it('should correctly group TypeScript files', () => {

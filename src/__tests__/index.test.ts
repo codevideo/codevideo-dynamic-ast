@@ -1,4 +1,5 @@
-import { IFileSource, parseProject } from '../index';
+import { IFileSource } from '@fullstackcraftllc/codevideo-types';
+import { compileProject } from '../utils/compileProject';
 
 describe('Parse Project', () => {
     it('should handle multiple language projects', async () => {
@@ -17,7 +18,7 @@ describe('Parse Project', () => {
             }
         ];
 
-        const result = await parseProject(files);
+        const result = await compileProject(files);
         expect(result.projects).toHaveLength(3);
         
         // Check TypeScript results
@@ -37,13 +38,13 @@ describe('Parse Project', () => {
     });
 
     it('should handle empty file list', async () => {
-        const result = await parseProject([]);
+        const result = await compileProject([]);
         expect(result.projects).toHaveLength(0);
     });
 
     it('should handle parser failures gracefully', async () => {
         // Mock TypeScript parser to fail
-        jest.spyOn(require('../parsers/typescript-parser'), 'parseTypeScript')
+        jest.spyOn(require('../compilers/compileTypeScriptProject'), 'compileTypeScriptProject')
             .mockRejectedValue(new Error('TypeScript parser failed'));
 
         const files: IFileSource[] = [{
@@ -51,7 +52,7 @@ describe('Parse Project', () => {
             content: 'const x: number = 1;'
         }];
 
-        const result = await parseProject(files);
+        const result = await compileProject(files);
         expect(result.projects).toHaveLength(1);
         expect(result.projects[0].errors[0]).toMatchObject({
             file: 'unknown',

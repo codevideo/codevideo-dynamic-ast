@@ -1,5 +1,6 @@
-import { IFileSource } from '../interfaces/IFileSource';
-import { parseTypeScript } from '../parsers/typescript-parser';
+import { IFileSource } from '@fullstackcraftllc/codevideo-types';
+import { compileTypeScriptProject } from '../compilers/compileTypeScriptProject'
+
 
 describe('TypeScript Parser', () => {
     it('should detect syntax errors', async () => {
@@ -8,7 +9,7 @@ describe('TypeScript Parser', () => {
             content: 'const x: number = "string";'  // Type mismatch
         }];
 
-        const errors = await parseTypeScript(files);
+        const errors = await compileTypeScriptProject(files);
         expect(errors).toHaveLength(1);
         expect(errors[0]).toMatchObject({
             file: expect.stringContaining('test.ts'),
@@ -31,7 +32,7 @@ describe('TypeScript Parser', () => {
             }
         ];
 
-        const errors = await parseTypeScript(files);
+        const errors = await compileTypeScriptProject(files);
         expect(errors).toHaveLength(1);
         expect(errors[0].message).toContain('Property \'age\' is missing');
     });
@@ -42,7 +43,7 @@ describe('TypeScript Parser', () => {
             content: ''
         }];
 
-        const errors = await parseTypeScript(files);
+        const errors = await compileTypeScriptProject(files);
         expect(errors).toHaveLength(0);
     });
 });

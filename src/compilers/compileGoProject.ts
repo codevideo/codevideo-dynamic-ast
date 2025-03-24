@@ -1,11 +1,10 @@
 import path from "path";
 import os from "os";
-import fs from "fs/promises";
-import { IFileSource } from "../interfaces/IFileSource";
-import { IProjectError } from "../interfaces/IProjectError";
+import { promises as fs } from "fs"; // Fix: import the promises interface correctly
+import { IFileSource, IProjectError } from '@fullstackcraftllc/codevideo-types';
 import { execAsync } from "../utils/exec";
 
-export async function parseGo(files: IFileSource[]): Promise<IProjectError[]> {
+export async function compileGoProject(files: IFileSource[]): Promise<IProjectError[]> {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'go-ast-'));
     
     try {
@@ -16,7 +15,7 @@ export async function parseGo(files: IFileSource[]): Promise<IProjectError[]> {
         }));
 
         // Run go build
-        const { stderr } = await execAsync('go build ./...', { cwd: tempDir });
+        const { stderr } = await execAsync('go build .', { cwd: tempDir });
         
         return parseGoBuildOutput(stderr);
     } finally {

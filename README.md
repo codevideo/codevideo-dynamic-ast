@@ -1,6 +1,6 @@
 # `codevideo-dynamic-ast`
 
-Parse and validate code from multiple programming languages using their native AST parsers - all through a single unified interface.
+Parse and validate code from multiple programming languages using their native compilers - all through a single unified interface.
 
 ## Installation
 
@@ -10,18 +10,19 @@ npm install codevideo-dynamic-ast
 
 ## Usage
 
-Provide an array of one or more `IFileSource` objects and get back an `IParseResult` back.
+Provide an array of one or more `IFileSource` objects and get an array of `ICompileResult` back.
 
 ```typescript
+import { IFileSource, ICompileResult } from '@fullstackcraftllc/codevideo-types';
 import { parseProject } from '@fullstackcraftllc/codevideo-dynamic-ast';
 
-const files = [
+const files: Array<IFileSource> = [
     { path: 'src/index.ts', content: '...' },
     { path: 'src/utils/someutil.ts', content: '...' },
     { path: 'src/components/MyComponent.tsx', content: '...' }
 ];
 
-const results = await parseProject(files);
+const results: Array<ICompileResult> = await compileProject(files);
 console.log(results);
 
 // Output:
@@ -29,7 +30,13 @@ console.log(results);
 //     "projects": [
 //         {
 //             "language": "TypeScript"
-//             "errors": [...]
+//             "errors": [{
+//                 "file": "src/index.ts",
+//                 "message": "..."
+//                 "line": 1,
+//                 "column": 1,
+//                 "code": "2339"
+//             }],
 //         },
 //     ]
 // }

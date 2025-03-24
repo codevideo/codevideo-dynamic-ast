@@ -1,5 +1,5 @@
+import { IFileSource } from '@fullstackcraftllc/codevideo-types';
 import { extname } from 'path';
-import { IFileSource } from './interfaces/IFileSource';
 
 interface IProjectGroup {
     language: string;

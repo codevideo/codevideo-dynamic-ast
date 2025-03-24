@@ -1,41 +1,37 @@
-import typescript from '@rollup/plugin-typescript';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import dts from 'rollup-plugin-dts';
+import typescript from "rollup-plugin-typescript2";
+import dts from "rollup-plugin-dts";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
 
-const config = [
+export default [
+  // standard ES package - used in browser environments
   {
-    input: 'src/index.ts',
+    input: "src/index.ts",
     output: [
       {
-        file: 'dist/index.js',
-        format: 'cjs',
-        sourcemap: true,
+        file: "dist/index.js", // ES Module format for browsers
+        format: "es",
       },
       {
-        file: 'dist/index.esm.js',
-        format: 'esm',
-        sourcemap: true,
-      },
+        file: "dist/index.cjs", // CommonJS format for Node.js
+        format: "cjs",
+      }
     ],
-    external: ['ts-morph'], // Don't bundle dependencies
     plugins: [
-      typescript({
-        tsconfig: './tsconfig.json',
-        exclude: ['**/__tests__/**'],
-      }),
-      resolve(),
-      commonjs(),
+      resolve(), // resolve node_modules
+      commonjs(), // convert CommonJS to ES modules
+      typescript(),
     ],
   },
+  // type declarations
   {
-    input: 'src/index.ts',
-    output: {
-      file: 'dist/index.d.ts',
-      format: 'es',
-    },
+    input: "src/index.ts",
+    output: [
+      {
+        file: "dist/index.d.ts",
+        format: "es",
+      },
+    ],
     plugins: [dts()],
   },
 ];
-
-export default config;
