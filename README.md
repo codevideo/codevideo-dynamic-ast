@@ -10,36 +10,48 @@ npm install codevideo-dynamic-ast
 
 ## Usage
 
-Provide an array of one or more `IFileSource` objects and get an array of `ICompileResult` back.
+Provide an array of one or more `IFileSource` objects and get an array of `IProjectError` back.
+Note: for multiple languages in one codebase (for example, a monorepo), it's recommended to use the `detectedProjects` function first.
 
 ```typescript
-import { IFileSource, ICompileResult } from '@fullstackcraftllc/codevideo-types';
+import { IFileSource, IProjectError } from '@fullstackcraftllc/codevideo-types';
 import { parseProject } from '@fullstackcraftllc/codevideo-dynamic-ast';
 
 const files: Array<IFileSource> = [
-    { path: 'src/index.ts', content: '...' },
-    { path: 'src/utils/someutil.ts', content: '...' },
-    { path: 'src/components/MyComponent.tsx', content: '...' }
+    { path: 'typescript/src/index.ts', content: '// index.ts' },
+    { path: 'typescript/src/utils/someutil.ts', content: '// some util' },
+    { path: 'typescript/src/components/MyComponent.tsx', content: '// MyComponent.tsx' },
+    { path: 'python/main.py', content: 'print("Hello, World!")'},
+    { path: 'python/utils/utils.py', content: '# some util'},
 ];
 
-const results: Array<ICompileResult> = await compileProject(files);
-console.log(results);
+const projects = parseProject(files);
 
-// Output:
-// {
-//     "projects": [
-//         {
-//             "language": "TypeScript"
-//             "errors": [{
-//                 "file": "src/index.ts",
-//                 "message": "..."
-//                 "line": 1,
-//                 "column": 1,
-//                 "code": "2339"
-//             }],
-//         },
-//     ]
-// }
+// compile each project seperately
+for (const project of projects) {
+    const projectErrors: Array<IProjectError> = await compileProject(project.files);
+    console.log(projectErrors);
+}
+```
+
+
+Output:
+
+```shell
+{
+    "projects": [
+        {
+            "language": "TypeScript"
+            "errors": [{
+                "file": "typescript/src/index.ts",
+                "message": "..."
+                "line": 1,
+                "column": 1,
+                "code": "2339"
+            }],
+        },
+    ]
+}
 ```
 
 ## Supported Languages
@@ -47,6 +59,7 @@ console.log(results);
 - TypeScript (using ts-morph)
 - C# (using dotnet CLI)
 - Go (using go CLI)
+- Python (using py_compile and optional flake8)
 
 ## Requirements
 
@@ -54,6 +67,8 @@ console.log(results);
 - TypeScript >= 4.0.0
 - For C# parsing: .NET SDK
 - For Go parsing: Go toolchain
+- For Python parsing: Python 3.x (python3 command must be available)
+  - Optional: flake8 for additional style and error checking
 
 ## Development
 

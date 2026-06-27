@@ -1,6 +1,7 @@
 import { compileTypeScriptProject } from '../compilers/compileTypeScriptProject';
 import { compileCSharpProject } from '../compilers/compileCSharpProject';
 import { compileGoProject } from '../compilers/compileGoProject';
+import { compilePythonProject } from '../compilers/compilePythonProject';
 import { detectProjects } from './detectProjects';
 import { ICompileResult } from '../interfaces/ICompileResult';
 import { IFileSource, IProjectError } from '@fullstackcraftllc/codevideo-types';
@@ -21,6 +22,9 @@ export const compileProject = async (files: IFileSource[]): Promise<ICompileResu
                     break;
                 case 'Go':
                     errors = await compileGoProject(project.files);
+                    break;
+                case 'Python':
+                    errors = await compilePythonProject(project.files);
                     break;
                 default:
                     console.warn(`Unsupported language: ${project.language}`);

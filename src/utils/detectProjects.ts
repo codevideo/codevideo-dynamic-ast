@@ -24,6 +24,9 @@ export function detectProjects(files: IFileSource[]): IProjectGroup[] {
             case '.go':
                 language = 'Go';
                 break;
+            case '.py':
+                language = 'Python';
+                break;
             // Add more language detection as needed
         }
         

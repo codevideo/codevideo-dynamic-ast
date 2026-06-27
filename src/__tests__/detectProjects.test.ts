@@ -21,12 +21,13 @@ describe('Project Detector', () => {
         const files: IFileSource[] = [
             { path: 'src/main.ts', content: '' },
             { path: 'src/Program.cs', content: '' },
-            { path: 'src/utils.go', content: '' }
+            { path: 'src/utils.go', content: '' },
+            { path: 'src/script.py', content: '' }
         ];
 
         const projects = detectProjects(files);
-        expect(projects).toHaveLength(3);
-        expect(projects.map(p => p.language)).toEqual(['TypeScript', 'C#', 'Go']);
+        expect(projects).toHaveLength(4);
+        expect(projects.map(p => p.language)).toEqual(['TypeScript', 'C#', 'Go', 'Python']);
     });
 
     it('should handle unknown file extensions', () => {
@@ -38,5 +39,20 @@ describe('Project Detector', () => {
         const projects = detectProjects(files);
         expect(projects).toHaveLength(1);
         expect(projects[0].language).toBe('TypeScript');
+    });
+
+    it('should correctly group Python files', () => {
+        const files: IFileSource[] = [
+            { path: 'main.py', content: '' },
+            { path: 'utils.py', content: '' },
+            { path: 'tests/test_main.py', content: '' }
+        ];
+
+        const projects = detectProjects(files);
+        expect(projects).toHaveLength(1);
+        expect(projects[0]).toEqual({
+            language: 'Python',
+            files: files
+        });
     });
 });
