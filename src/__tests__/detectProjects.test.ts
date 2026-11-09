@@ -1,58 +1,21 @@
-import { IFileSource } from '@fullstackcraftllc/codevideo-types';
 import { detectProjects } from '../utils/detectProjects';
-
-describe('Project Detector', () => {
-    it('should correctly group TypeScript files', () => {
-        const files: IFileSource[] = [
-            { path: 'src/main.ts', content: '' },
-            { path: 'src/utils.ts', content: '' },
-            { path: 'src/components/App.tsx', content: '' }
-        ];
-
-        const projects = detectProjects(files);
-        expect(projects).toHaveLength(1);
-        expect(projects[0]).toEqual({
-            language: 'TypeScript',
-            files: files
-        });
+const f = (path: string) => ({ path, content: '' });
+describe('Project discovery', () => {
+    it('assigns nested sources to the nearest manifest and retains supporting files', () => {
+        const groups = detectProjects(['tsconfig.json', 'a.ts', 'app/tsconfig.json', 'app/b.ts', 'data.json'].map(f));
+        expect(groups).toHaveLength(2);
+        expect(groups.find(g => g.root === '.')!.sourcePaths).toEqual(['a.ts']);
+        expect(groups.find(g => g.root === 'app')!.sourcePaths).toEqual(['app/b.ts']);
+        expect(groups[0].files).toHaveLength(5);
     });
-
-    it('should separate different language projects', () => {
-        const files: IFileSource[] = [
-            { path: 'src/main.ts', content: '' },
-            { path: 'src/Program.cs', content: '' },
-            { path: 'src/utils.go', content: '' },
-            { path: 'src/script.py', content: '' }
-        ];
-
-        const projects = detectProjects(files);
-        expect(projects).toHaveLength(4);
-        expect(projects.map(p => p.language)).toEqual(['TypeScript', 'C#', 'Go', 'Python']);
+    it('separates languages and normalizes virtual paths', () => {
+        const groups = detectProjects(['/src/a.ts', '/src/b.py', '/src/c.go', '/src/d.cs', '/src/e.rs'].map(f));
+        expect(groups.map(g => g.language)).toEqual(['TypeScript', 'Python', 'Go', 'C#', 'Unsupported']);
+        expect(groups[0].sourcePaths).toEqual(['src/a.ts']);
     });
-
-    it('should handle unknown file extensions', () => {
-        const files: IFileSource[] = [
-            { path: 'src/main.ts', content: '' },
-            { path: 'src/unknown.xyz', content: '' }
-        ];
-
-        const projects = detectProjects(files);
-        expect(projects).toHaveLength(1);
-        expect(projects[0].language).toBe('TypeScript');
-    });
-
-    it('should correctly group Python files', () => {
-        const files: IFileSource[] = [
-            { path: 'main.py', content: '' },
-            { path: 'utils.py', content: '' },
-            { path: 'tests/test_main.py', content: '' }
-        ];
-
-        const projects = detectProjects(files);
-        expect(projects).toHaveLength(1);
-        expect(projects[0]).toEqual({
-            language: 'Python',
-            files: files
-        });
+    it('groups manifest-free nested Python under its containing root', () => {
+        const groups = detectProjects(['app/main.py', 'app/lib/helper.py', 'other/main.py'].map(f));
+        expect(groups).toHaveLength(2);
+        expect(groups[0].sourcePaths).toEqual(['app/lib/helper.py', 'app/main.py']);
     });
 });

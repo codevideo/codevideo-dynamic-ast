@@ -1,7 +1,7 @@
-import { compileProject } from './utils/compileProject';
-import { detectProjects } from './utils/detectProjects';
-import { ICompileResult } from './interfaces/ICompileResult';
-import { ICompileProjectResult } from './interfaces/ICompileProjectResult';
-import { compilePythonProject } from './compilers/compilePythonProject';
-
-export { compileProject, detectProjects, compilePythonProject, ICompileResult, ICompileProjectResult as IProjectResult };
+export { compileProject } from './utils/compileProject';
+export { detectProjects } from './utils/detectProjects';
+export type { IProjectGroup } from './utils/detectProjects';
+export { compilePythonProject } from './compilers/compilePythonProject';
+export { aggregateOutcomes } from './interfaces/ICompileResult';
+export type { ICompileResult } from './interfaces/ICompileResult';
+export type { ICompileProjectResult, ICompileProjectResult as IProjectResult, VerificationOutcome, VerificationIssue, CheckKind } from './interfaces/ICompileProjectResult';

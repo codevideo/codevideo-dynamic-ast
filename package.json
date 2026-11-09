@@ -1,6 +1,6 @@
 {
   "name": "@fullstackcraftllc/codevideo-dynamic-ast",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Dynamically identify and statically analyze an arbitrary amount of source code files of any programming language.",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,10 +21,8 @@
   },
   "dependencies": {
     "@fullstackcraftllc/codevideo-types": "^2.0.42",
-    "ts-morph": "^25.0.1"
-  },
-  "peerDependencies": {
-    "typescript": ">=4.0.0"
+    "ts-morph": "^25.0.1",
+    "typescript": "5.8.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.1",
@@ -40,8 +38,7 @@
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-typescript2": "^0.36.0",
     "ts-jest": "^29.0.0",
-    "tslib": "^2.8.1",
-    "typescript": "^5.8.2"
+    "tslib": "^2.8.1"
   },
   "keywords": [
     "ast",

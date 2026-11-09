@@ -1,91 +1,33 @@
-# `codevideo-dynamic-ast`
+# codevideo-dynamic-ast
 
-Parse and validate code from multiple programming languages using their native compilers - all through a single unified interface.
+Offline verification of complete CodeVideo lesson projects. Checks use real compiler inputs; no package installation or dependency downloads are performed by the verifier.
 
-## Installation
-
-```bash
-npm install codevideo-dynamic-ast
+```ts
+import { compileProject } from '@fullstackcraftllc/codevideo-dynamic-ast';
+const result = await compileProject([
+  { path: 'app/tsconfig.json', content: '{"compilerOptions":{"target":"ES2020","strict":true}}' },
+  { path: 'app/main.ts', content: 'export const count: number = 1;' },
+]);
+console.log(result.outcome, result.projects);
 ```
 
-## Usage
+Outcomes are `passed`, `failed` (source/configuration errors), `blocked` (missing prerequisites or runner failure), and `unsupported` (no implemented check). Overall precedence is failed, blocked, unsupported, passed. Empty/documentation-only inputs are unsupported, never passed. Project results retain `language` and `errors` and add `root`, `check`, `issues`, `checkedPaths`, `supportingPaths`, `unsupportedPaths`, compiler version and configuration.
 
-Provide an array of one or more `IFileSource` objects and get an array of `IProjectError` back.
-Note: for multiple languages in one codebase (for example, a monorepo), it's recommended to use the `detectedProjects` function first.
+| Source | Check | Prerequisites |
+| --- | --- | --- |
+| TS/TSX/MTS/CTS | TypeScript typecheck, no emit | Local configuration/declarations; no permissive import shims |
+| JS/JSX/MJS/CJS | Syntax only | TypeScript package |
+| Python | `python3 -I -m py_compile` per file | Python 3; imports and runtime behavior are not verified |
+| Go | `go build -mod=readonly ./...` | Go, go.mod, locally cached dependencies |
+| C# | Offline local SDK/cache restore, then `dotnet build --no-restore` | .NET SDK/targeting packs and .csproj |
+| Rust and other recognized source formats | Unsupported | Future milestone |
 
-```typescript
-import { IFileSource, IProjectError } from '@fullstackcraftllc/codevideo-types';
-import { parseProject } from '@fullstackcraftllc/codevideo-dynamic-ast';
+Project roots come from tsconfig.json/jsconfig.json, go.mod and .csproj; sources use the nearest matching root. Manifest-free sources share their top-level directory (or the virtual root). The complete supplied tree is materialized once, preserving sibling imports, assets, manifests and duplicate basenames in different directories. Leading virtual-root slashes are normalized; traversal, drive paths and duplicate normalized paths are rejected.
 
-const files: Array<IFileSource> = [
-    { path: 'typescript/src/index.ts', content: '// index.ts' },
-    { path: 'typescript/src/utils/someutil.ts', content: '// some util' },
-    { path: 'typescript/src/components/MyComponent.tsx', content: '// MyComponent.tsx' },
-    { path: 'python/main.py', content: 'print("Hello, World!")'},
-    { path: 'python/utils/utils.py', content: '# some util'},
-];
+TypeScript honors local configuration and extends, uses an ES2020/NodeNext strict fallback without configuration, and does not access declarations from the calling application's node_modules. Project references are explicitly unsupported. Supply dependency declarations/configuration in the input tree; missing packages are blocked. JavaScript receives syntax checking even when checkJs is configured. Supporting assets are retained but not claimed as validated source. Sources excluded by tsconfig/jsconfig are listed in excludedPaths and are not claimed as checked.
 
-const projects = parseProject(files);
+TypeScript runs in a worker with a 60-second deadline and a 512 MB old-generation limit. Native commands use argument arrays, share a 60-second deadline per project and clean up after completion. Go's proxy/checksum network access and automatic toolchain downloads are disabled. .NET restore uses only a generated empty local source and existing caches. Native builds are not a security sandbox: custom build targets should only be checked in a separately sandboxed environment. Runtime tests, dependency installation, Rust support and full sandboxing are outside this release.
 
-// compile each project seperately
-for (const project of projects) {
-    const projectErrors: Array<IProjectError> = await compileProject(project.files);
-    console.log(projectErrors);
-}
-```
+The exported `compilePythonProject` compatibility helper returns an error list; prefer `compileProject` to distinguish source errors from blocked or unsupported checks. Both ESM and CommonJS package entry points are supported.
 
-
-Output:
-
-```shell
-{
-    "projects": [
-        {
-            "language": "TypeScript"
-            "errors": [{
-                "file": "typescript/src/index.ts",
-                "message": "..."
-                "line": 1,
-                "column": 1,
-                "code": "2339"
-            }],
-        },
-    ]
-}
-```
-
-## Supported Languages
-
-- TypeScript (using ts-morph)
-- C# (using dotnet CLI)
-- Go (using go CLI)
-- Python (using py_compile and optional flake8)
-
-## Requirements
-
-- Node.js >= 16
-- TypeScript >= 4.0.0
-- For C# parsing: .NET SDK
-- For Go parsing: Go toolchain
-- For Python parsing: Python 3.x (python3 command must be available)
-  - Optional: flake8 for additional style and error checking
-
-## Development
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Build:
-
-```bash
-npm run build
-```
-
-Test:
-
-```
-npm test
-```
+Run `npm run type-check`, `npm test -- --runInBand`, and `npm run build`. Native integration tests skip locally when toolchains are absent; set `CODEVIDEO_REQUIRE_TOOLCHAINS=1` to require them, as Linux CI does. Tests compile real good/bad/repaired projects and separately mock process failures.

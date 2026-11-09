@@ -7,6 +7,7 @@ export default [
   // standard ES package - used in browser environments
   {
     input: "src/index.ts",
+    external: ["typescript", "ts-morph", "@fullstackcraftllc/codevideo-types", "path", "os", "fs", "fs/promises", "child_process", "worker_threads"],
     output: [
       {
         file: "dist/index.js", // ES Module format for browsers
@@ -26,6 +27,7 @@ export default [
   // type declarations
   {
     input: "src/index.ts",
+    external: ["typescript", "ts-morph", "@fullstackcraftllc/codevideo-types", "path", "os", "fs", "fs/promises", "child_process", "worker_threads"],
     output: [
       {
         file: "dist/index.d.ts",

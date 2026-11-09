@@ -6,7 +6,10 @@ export default {
     collectCoverageFrom: [
         'src/**/*.ts',
         '!src/**/*.d.ts',
-        '!src/**/__tests__/**'
+        '!src/**/__tests__/**',
+        // Serialized into a compiler worker: coverage instrumentation cannot travel across threads.
+        // Its behavior is exercised through real compiler integration tests.
+        '!src/utils/checkTypeScript.ts'
     ],
     coverageThreshold: {
         global: {

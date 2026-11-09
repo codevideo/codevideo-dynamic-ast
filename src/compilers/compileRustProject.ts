@@ -19,9 +19,9 @@ export async function compileRustProject(files: IFileSource[]): Promise<IProject
         }));
 
         // Run cargo check
-        return new Promise((resolve, reject) => {
+        return await new Promise<IProjectError[]>((resolve, reject) => {
             exec('cargo check', { cwd: tempDir }, (error, stdout, stderr) => {
-                if (error && stderr && !stderr.includes('error:')) {
+                if (error && (!stderr || !stderr.includes('error:'))) {
                     reject(error);
                     return;
                 }
